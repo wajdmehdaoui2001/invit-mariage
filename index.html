@@ -16,7 +16,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
+  html, body { margin: 0; padding: 0; overscroll-behavior-y: none; }
+  html { scrollbar-width: none; }
+  html::-webkit-scrollbar { display: none; width: 0; height: 0; }
   body { background: #E6D2C7; }
   a { color: #9E3B4E; text-decoration: none; }
   a:hover { color: #B5566A; }
@@ -278,8 +280,9 @@ class Component extends DCLogic {
     this.reduce = reduce;
 
     // lock page scroll until the envelope is opened
-    document.documentElement.style.scrollBehavior = 'smooth';
     document.body.style.overflow = 'hidden';
+    // navigation « frame par frame » : un geste = une scène
+    this.setupPager();
 
     // language toggle (hide French translations if showFrench is false)
     this.applyFrench();
@@ -389,6 +392,78 @@ class Component extends DCLogic {
     const show = this.props.showFrench !== false;
     document.querySelectorAll('[data-fr]').forEach(el => {
       el.style.display = show ? '' : 'none';
+    });
+  }
+
+  setupPager() {
+    const sections = Array.from(document.querySelectorAll('[data-stage] section'));
+    if (!sections.length) return;
+    let animating = false;
+    const vh = () => window.innerHeight;
+    const curIndex = () => {
+      const y = window.scrollY;
+      let best = 0;
+      sections.forEach((s, i) => { if (s.offsetTop <= y + vh() * 0.5) best = i; });
+      return best;
+    };
+    const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const animateTo = (target) => {
+      const from = window.scrollY;
+      const dist = target - from;
+      if (Math.abs(dist) < 2) return;
+      animating = true;
+      if (this.reduce) {
+        window.scrollTo(0, target);
+        setTimeout(() => { animating = false; }, 250);
+        return;
+      }
+      const dur = 850, t0 = performance.now();
+      const step = (now) => {
+        const p = Math.min(1, (now - t0) / dur);
+        window.scrollTo(0, from + dist * ease(p));
+        if (p < 1) requestAnimationFrame(step);
+        else setTimeout(() => { animating = false; }, 160);
+      };
+      requestAnimationFrame(step);
+    };
+    const go = (dir) => {
+      if (animating || !this.state.opened) return;
+      const idx = curIndex();
+      const sec = sections[idx];
+      const innerMax = sec.offsetTop + sec.offsetHeight - vh(); // scène plus haute que l'écran : étape intermédiaire
+      if (dir > 0) {
+        if (window.scrollY < innerMax - 24) animateTo(innerMax);
+        else if (idx < sections.length - 1) animateTo(sections[idx + 1].offsetTop);
+      } else {
+        if (window.scrollY > sec.offsetTop + 24) animateTo(sec.offsetTop);
+        else if (idx > 0) animateTo(sections[idx - 1].offsetTop);
+      }
+    };
+    let wheelLock = 0;
+    window.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) return; // laisser le zoom navigateur
+      e.preventDefault();
+      const now = Date.now();
+      if (animating || now < wheelLock || Math.abs(e.deltaY) < 8) return;
+      wheelLock = now + 420;
+      go(e.deltaY > 0 ? 1 : -1);
+    }, { passive: false });
+    let touchY = null;
+    window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+    window.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+    window.addEventListener('touchend', (e) => {
+      if (touchY === null) return;
+      const dy = touchY - e.changedTouches[0].clientY;
+      touchY = null;
+      if (Math.abs(dy) > 46) go(dy > 0 ? 1 : -1);
+    });
+    window.addEventListener('keydown', (e) => {
+      if (/^(BUTTON|A|INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+      if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(1); }
+      else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
+    });
+    window.addEventListener('resize', () => {
+      if (!animating && this.state.opened) window.scrollTo(0, sections[curIndex()].offsetTop);
     });
   }
 
