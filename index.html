@@ -368,16 +368,15 @@ class Component extends DCLogic {
       wait();
     }
 
-    // musique d'ambiance : les 15 premières secondes, lancée dès que le navigateur l'autorise
+    // musique d'ambiance : les 15 premières secondes en boucle, lancée dès que le navigateur l'autorise
     const url = (this.props.musicUrl || '').trim();
     if (url) {
       const a = new Audio(url);
-      a.loop = false;
+      a.loop = true;
       a.preload = 'auto';
       this.audio = a;
       a.addEventListener('canplay', () => this.setState({ musicAvail: true }), { once: true });
       a.addEventListener('error', () => this.setState({ musicAvail: false, musicOn: false }), { once: true });
-      a.addEventListener('ended', () => this.setState({ musicOn: false }));
       const start = () => {
         if (this.state.musicOn) return;
         a.volume = 0;
@@ -391,7 +390,7 @@ class Component extends DCLogic {
       // démarrage au premier geste (le tap qui ouvre l'enveloppe)
       start();
       const onGesture = () => {
-        if (!this.state.musicOn && !a.ended) start();
+        if (!this.state.musicOn) start();
         window.removeEventListener('pointerdown', onGesture);
         window.removeEventListener('touchend', onGesture);
         window.removeEventListener('keydown', onGesture);
@@ -519,7 +518,6 @@ class Component extends DCLogic {
       a.pause();
       this.setState({ musicOn: false });
     } else {
-      if (a.ended || (a.duration && a.currentTime >= a.duration - 0.05)) a.currentTime = 0;
       a.volume = 0;
       a.play().then(() => {
         let v = 0;
