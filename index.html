@@ -271,7 +271,7 @@
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 844}, &quot;showFrench&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Contenu&quot;}, &quot;petalsOn&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Ambiance&quot;}, &quot;musicUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ambiance&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 844}, &quot;showFrench&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Contenu&quot;}, &quot;petalsOn&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Ambiance&quot;}, &quot;musicUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;assets/musique.mp3&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ambiance&quot;}}">
 class Component extends DCLogic {
   state = { opened: false, musicAvail: false, musicOn: false };
 
@@ -368,18 +368,37 @@ class Component extends DCLogic {
       wait();
     }
 
-    // optional ambient music (only if a real track is provided)
+    // musique d'ambiance : les 15 premières secondes, lancée dès que le navigateur l'autorise
     const url = (this.props.musicUrl || '').trim();
     if (url) {
-      fetch(url, { method: 'HEAD' }).then(r => {
-        if (r && r.ok) {
-          const a = new Audio(url);
-          a.loop = true;
-          a.preload = 'auto';
-          this.audio = a;
-          this.setState({ musicAvail: true });
-        }
-      }).catch(() => {});
+      const a = new Audio(url);
+      a.loop = false;
+      a.preload = 'auto';
+      this.audio = a;
+      a.addEventListener('canplay', () => this.setState({ musicAvail: true }), { once: true });
+      a.addEventListener('error', () => this.setState({ musicAvail: false, musicOn: false }), { once: true });
+      a.addEventListener('ended', () => this.setState({ musicOn: false }));
+      const start = () => {
+        if (this.state.musicOn) return;
+        a.volume = 0;
+        a.play().then(() => {
+          this.setState({ musicOn: true, musicAvail: true });
+          let v = 0;
+          const t = setInterval(() => { v = Math.min(0.5, v + 0.03); a.volume = v; if (v >= 0.5) clearInterval(t); }, 70);
+        }).catch(() => {});
+      };
+      // tentative d'autoplay immédiate ; si le navigateur la bloque,
+      // démarrage au premier geste (le tap qui ouvre l'enveloppe)
+      start();
+      const onGesture = () => {
+        if (!this.state.musicOn && !a.ended) start();
+        window.removeEventListener('pointerdown', onGesture);
+        window.removeEventListener('touchend', onGesture);
+        window.removeEventListener('keydown', onGesture);
+      };
+      window.addEventListener('pointerdown', onGesture);
+      window.addEventListener('touchend', onGesture);
+      window.addEventListener('keydown', onGesture);
     }
   }
 
@@ -500,6 +519,7 @@ class Component extends DCLogic {
       a.pause();
       this.setState({ musicOn: false });
     } else {
+      if (a.ended || (a.duration && a.currentTime >= a.duration - 0.05)) a.currentTime = 0;
       a.volume = 0;
       a.play().then(() => {
         let v = 0;
