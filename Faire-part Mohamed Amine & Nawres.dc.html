@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Aref+Ruqaa:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #E6D2C7; }
+  a { color: #9E3B4E; text-decoration: none; }
+  a:hover { color: #B5566A; }
+  ::selection { background: rgba(158,59,78,0.16); }
+  @keyframes hmFall {
+    0%   { transform: translateY(-12vh) translateX(0); }
+    100% { transform: translateY(112vh) translateX(var(--dx, 20px)); }
+  }
+  @keyframes hmPetalFade {
+    0%  { opacity: 0; }
+    7%  { opacity: var(--po, 0.85); }
+    86% { opacity: var(--po, 0.85); }
+    100%{ opacity: 0; }
+  }
+  @keyframes hmSway {
+    0%   { transform: translateX(calc(-1 * var(--sw, 16px))) rotate(-18deg) scaleY(0.96); }
+    100% { transform: translateX(var(--sw, 16px)) rotate(42deg) scaleY(1.05); }
+  }
+  @keyframes hmBob {
+    0%,100% { transform: translateY(0); opacity: 0.85; }
+    50%     { transform: translateY(7px); opacity: 0.4; }
+  }
+  @keyframes hmRing {
+    0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.55; }
+    50%     { transform: translate(-50%,-50%) scale(1.14); opacity: 0.12; }
+  }
+  @keyframes hmGlow {
+    0%,100% { opacity: 0.55; }
+    50%     { opacity: 0.85; }
+  }
+  @keyframes hmZoom {
+    0%   { transform: scale(1); }
+    100% { transform: scale(1.1); }
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</helmet>
+
+<div data-app style="min-height:100svh; background: radial-gradient(120% 90% at 50% 0%, #F3E7DC 0%, #E6D2C7 60%, #D9C2B7 100%); display:flex; justify-content:center;">
+
+  <!-- ambient falling petals (soft, swaying, like the reference video) -->
+  <div data-petals style="position:fixed; inset:0; pointer-events:none; z-index:40; overflow:hidden;">
+    <span style="position:absolute; left:6%;  top:0; --dx:28px;  --po:0.9;  opacity:0; animation:hmFall 13s linear infinite, hmPetalFade 13s linear infinite; animation-delay:0s; will-change:transform;"><span style="display:block; width:16px; height:14px; --sw:14px; background:radial-gradient(circle at 32% 28%, #F9D3DB, #F0A6BA 65%, #E68CA4); border-radius:58% 42% 62% 38% / 55% 60% 40% 45%; box-shadow:inset -2px -3px 6px rgba(196,90,120,0.3); filter:blur(0.3px); animation:hmSway 2.7s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:15%; top:0; --dx:-24px; --po:0.8;  opacity:0; animation:hmFall 17s linear infinite, hmPetalFade 17s linear infinite; animation-delay:3.2s; will-change:transform;"><span style="display:block; width:12px; height:11px; --sw:12px; background:radial-gradient(circle at 32% 28%, #FBE0E4, #F2B4C4 65%, #E898AE); border-radius:62% 38% 55% 45% / 60% 55% 45% 40%; box-shadow:inset -2px -2px 5px rgba(196,90,120,0.28); filter:blur(0.6px); animation:hmSway 3.1s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:24%; top:0; --dx:20px;  --po:0.9;  opacity:0; animation:hmFall 11s linear infinite, hmPetalFade 11s linear infinite; animation-delay:5.5s; will-change:transform;"><span style="display:block; width:22px; height:19px; --sw:18px; background:radial-gradient(circle at 32% 28%, #F6BFCC, #EC93AC 62%, #DF7A96); border-radius:55% 45% 60% 40% / 58% 62% 38% 42%; box-shadow:inset -3px -4px 7px rgba(186,80,110,0.32); filter:blur(0.8px); animation:hmSway 2.4s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:33%; top:0; --dx:-30px; --po:0.85; opacity:0; animation:hmFall 15s linear infinite, hmPetalFade 15s linear infinite; animation-delay:1.4s; will-change:transform;"><span style="display:block; width:14px; height:12px; --sw:15px; background:radial-gradient(circle at 32% 28%, #F9D3DB, #F0A6BA 65%, #E68CA4); border-radius:58% 42% 62% 38% / 55% 60% 40% 45%; box-shadow:inset -2px -3px 6px rgba(196,90,120,0.3); filter:blur(0.2px); animation:hmSway 2.9s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:42%; top:0; --dx:18px;  --po:0.75; opacity:0; animation:hmFall 18.5s linear infinite, hmPetalFade 18.5s linear infinite; animation-delay:7s; will-change:transform;"><span style="display:block; width:11px; height:10px; --sw:11px; background:radial-gradient(circle at 32% 28%, #FBE0E4, #F2B4C4 65%, #E898AE); border-radius:62% 38% 55% 45% / 60% 55% 45% 40%; box-shadow:inset -2px -2px 5px rgba(196,90,120,0.28); filter:blur(1px); animation:hmSway 3.4s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:50%; top:0; --dx:-22px; --po:0.8;  opacity:0; animation:hmFall 12s linear infinite, hmPetalFade 12s linear infinite; animation-delay:2.2s; will-change:transform;"><span style="display:block; width:26px; height:22px; --sw:20px; background:radial-gradient(circle at 32% 28%, #F6BFCC, #EC93AC 62%, #DF7A96); border-radius:55% 45% 60% 40% / 58% 62% 38% 42%; box-shadow:inset -3px -4px 8px rgba(186,80,110,0.32); filter:blur(1.6px); animation:hmSway 2.2s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:58%; top:0; --dx:26px;  --po:0.85; opacity:0; animation:hmFall 16s linear infinite, hmPetalFade 16s linear infinite; animation-delay:4.6s; will-change:transform;"><span style="display:block; width:13px; height:12px; --sw:13px; background:radial-gradient(circle at 32% 28%, #F9D3DB, #F0A6BA 65%, #E68CA4); border-radius:58% 42% 62% 38% / 55% 60% 40% 45%; box-shadow:inset -2px -3px 6px rgba(196,90,120,0.3); filter:blur(0.4px); animation:hmSway 3s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:67%; top:0; --dx:-18px; --po:0.9;  opacity:0; animation:hmFall 10.5s linear infinite, hmPetalFade 10.5s linear infinite; animation-delay:6.4s; will-change:transform;"><span style="display:block; width:19px; height:17px; --sw:17px; background:radial-gradient(circle at 32% 28%, #FBE0E4, #F2B4C4 65%, #E898AE); border-radius:62% 38% 55% 45% / 60% 55% 45% 40%; box-shadow:inset -3px -3px 7px rgba(196,90,120,0.3); filter:blur(0.7px); animation:hmSway 2.5s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:75%; top:0; --dx:24px;  --po:0.85; opacity:0; animation:hmFall 14s linear infinite, hmPetalFade 14s linear infinite; animation-delay:0.8s; will-change:transform;"><span style="display:block; width:15px; height:13px; --sw:14px; background:radial-gradient(circle at 32% 28%, #F6BFCC, #EC93AC 62%, #DF7A96); border-radius:55% 45% 60% 40% / 58% 62% 38% 42%; box-shadow:inset -2px -3px 6px rgba(186,80,110,0.3); filter:blur(0.3px); animation:hmSway 2.8s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:84%; top:0; --dx:-26px; --po:0.75; opacity:0; animation:hmFall 19s linear infinite, hmPetalFade 19s linear infinite; animation-delay:8.4s; will-change:transform;"><span style="display:block; width:12px; height:11px; --sw:12px; background:radial-gradient(circle at 32% 28%, #F9D3DB, #F0A6BA 65%, #E68CA4); border-radius:58% 42% 62% 38% / 55% 60% 40% 45%; box-shadow:inset -2px -2px 5px rgba(196,90,120,0.28); filter:blur(0.9px); animation:hmSway 3.3s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:91%; top:0; --dx:16px;  --po:0.7;  opacity:0; animation:hmFall 12.5s linear infinite, hmPetalFade 12.5s linear infinite; animation-delay:3.8s; will-change:transform;"><span style="display:block; width:30px; height:26px; --sw:22px; background:radial-gradient(circle at 32% 28%, #FBE0E4, #F2B4C4 65%, #E898AE); border-radius:62% 38% 55% 45% / 60% 55% 45% 40%; box-shadow:inset -4px -4px 9px rgba(196,90,120,0.3); filter:blur(2.2px); animation:hmSway 2.3s ease-in-out infinite alternate;"></span></span>
+    <span style="position:absolute; left:47%; top:0; --dx:-16px; --po:0.8;  opacity:0; animation:hmFall 16.5s linear infinite, hmPetalFade 16.5s linear infinite; animation-delay:9.6s; will-change:transform;"><span style="display:block; width:13px; height:11px; --sw:12px; background:radial-gradient(circle at 32% 28%, #F6BFCC, #EC93AC 62%, #DF7A96); border-radius:55% 45% 60% 40% / 58% 62% 38% 42%; box-shadow:inset -2px -2px 5px rgba(186,80,110,0.28); filter:blur(0.5px); animation:hmSway 3.2s ease-in-out infinite alternate;"></span></span>
+  </div>
+
+  <!-- ============ SCROLL STAGE ============ -->
+  <div data-stage style="position:relative; width:100%; max-width:480px; background:#FBF5EC; box-shadow:0 0 60px rgba(120,70,60,0.18); overflow:hidden;">
+
+    <!-- SCENE 2 — BISMILLAH + VERSET -->
+    <section data-screen-label="Bismillah" style="position:relative; min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:76px 30px; background-image:linear-gradient(180deg, rgba(251,245,236,0.46) 0%, rgba(249,238,232,0.30) 50%, rgba(251,245,236,0.50) 100%), url('assets/bouquet.jpg'); background-size:cover; background-position:center; overflow:hidden;">
+      <div dir="rtl" lang="ar" data-reveal style="opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Aref Ruqaa', serif; font-weight:700; font-size:clamp(26px,8vw,38px); color:#7E2B3A; line-height:1.5; text-shadow:0 1px 0 rgba(255,255,255,0.6), 0 0 18px rgba(251,245,236,0.95), 0 0 34px rgba(251,245,236,0.8);">
+        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+      </div>
+
+      <div style="width:54px; height:1px; background:linear-gradient(90deg, transparent, #C2A76F, transparent); margin:26px 0 22px;" data-reveal data-delay="120"></div>
+
+      <div dir="rtl" lang="ar" data-reveal data-delay="220" style="opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Amiri', serif; font-size:clamp(18px,5.2vw,23px); color:#3E332E; line-height:2.15; max-width:24rem; text-shadow:0 1px 0 rgba(255,255,255,0.55), 0 0 16px rgba(251,245,236,0.95), 0 0 30px rgba(251,245,236,0.8);">
+        ﴿ وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَتَفَكَّرُونَ ﴾
+      </div>
+
+      <div dir="rtl" lang="ar" data-reveal data-delay="320" style="opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Amiri', serif; font-weight:700; font-size:clamp(15px,4vw,18px); color:#7E2B3A; margin-top:18px;">
+        صَدَقَ اللَّهُ الْعَظِيمُ
+      </div>
+    </section>
+
+    <!-- SCENE 3 — INVITATION (napperon dentelle, fidèle à la vidéo) -->
+    <section data-screen-label="Invitation" style="position:relative; min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:52px 14px; background:#EFE6E2;">
+      <div data-anim="doily" style="opacity:0; position:relative; width:min(412px,95vw); aspect-ratio:792 / 1116; background:url('assets/doily.jpg') center/contain no-repeat;">
+        <div dir="rtl" lang="ar" style="position:absolute; top:15%; bottom:15%; left:20%; right:20%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:2.6%; color:#3E332E; font-family:'Amiri', serif;">
+          <div style="font-family:'Aref Ruqaa', serif; font-weight:700; font-size:clamp(17px,5.2vw,21px); color:#7E2B3A;">تتشرّف عائلتا</div>
+
+          <div style="display:flex; align-items:center; justify-content:center; gap:9px; width:100%;">
+            <div style="flex:1; line-height:1.5;">
+              <div style="font-size:12.5px; font-weight:700;">السيد محمد الجرابة</div>
+              <div style="font-size:12.5px; font-weight:700;">السيدة صباح غربال</div>
+            </div>
+            <div style="font-family:'Great Vibes', cursive; font-size:22px; color:#B5566A;">&amp;</div>
+            <div style="flex:1; line-height:1.5;">
+              <div style="font-size:12.5px; font-weight:700;">السيد جمال بوعرادة</div>
+              <div style="font-size:12.5px; font-weight:700;">السيدة كلثوم بن مسلم</div>
+            </div>
+          </div>
+
+          <div style="font-size:12.5px; color:#5C4F47;">بدعوتكم لحضور حفل زفاف ابنيهما</div>
+
+          <div style="display:flex; align-items:center; justify-content:center; gap:11px; font-family:'Aref Ruqaa', serif; font-weight:700; color:#7E2B3A;">
+            <span style="font-size:clamp(23px,7.4vw,29px);">محمد أمين</span>
+            <span style="font-family:'Cormorant Garamond', serif; font-size:clamp(18px,5.5vw,23px); color:#C2A76F;">∞</span>
+            <span style="font-size:clamp(23px,7.4vw,29px);">نورس</span>
+          </div>
+
+          <div style="line-height:1.55;">
+            <div style="font-size:13px; font-weight:700;">يوم الأربعاء 12 أوت 2026</div>
+            <div style="font-size:11.5px; color:#5C4F47;">على الساعة التاسعة ليلاً</div>
+          </div>
+
+          <div style="font-size:11px; color:#7E2B3A;">بقاعة سعيد، طريق الأفران، صفاقس كم 7</div>
+        </div>
+      </div>
+
+      <!-- traduction française sous le napperon -->
+      <div data-fr data-reveal data-delay="160" style="opacity:0; transform:translateY(20px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); max-width:342px; margin-top:20px; text-align:center; font-family:'Cormorant Garamond', Georgia, serif; color:#7C6A61; font-size:13.5px; line-height:1.65;">
+        Les familles <strong style="font-weight:600; color:#5C4F47;">El Jrabaa &amp; Gharbal</strong> et <strong style="font-weight:600; color:#5C4F47;">Bouârada &amp; Ben Meslem</strong> ont l'honneur de vous convier au mariage de
+        <span style="display:block; font-family:'Great Vibes', cursive; font-size:27px; color:#B5566A; margin:5px 0;">Mohamed Amine &amp; Nawres</span>
+        Mercredi 12 août 2026 · 21h00<br>Salle Saïd · Route El Afrane · Sfax, km 7
+      </div>
+    </section>
+
+    <!-- SCENE 4 — LIEU + ITINÉRAIRE -->
+    <section data-screen-label="Lieu" style="position:relative; min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:72px 26px; background:linear-gradient(180deg, #F6EEE4 0%, #F3E7DC 100%);">
+      <div data-reveal style="opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Cormorant Garamond', Georgia, serif; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:#B08F6A;">Le lieu de la fête</div>
+      <div dir="rtl" lang="ar" data-reveal data-delay="80" style="opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Aref Ruqaa', serif; font-weight:700; font-size:clamp(24px,7vw,32px); color:#7E2B3A; margin-top:10px;">قاعة سعيد للمناسبات والأفراح</div>
+      <div data-fr data-reveal data-delay="160" style="opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Cormorant Garamond', Georgia, serif; font-size:17px; color:#5C4F47; margin-top:6px;">Salle Saïd — Fêtes &amp; Mariages</div>
+
+      <!-- téléphone : posé en isométrique, il se retourne (flip) puis un cœur tombe et des cœurs s'envolent (comme la vidéo) -->
+      <div style="perspective:1000px; margin-top:24px; height:230px; display:flex; align-items:center; justify-content:center;">
+        <div data-anim="phone" style="opacity:0; position:relative; width:152px; height:292px; transform-style:preserve-3d; will-change:transform;">
+          <div style="position:absolute; inset:0; transform:rotateX(58deg) rotateZ(-15deg); transform-style:preserve-3d;">
+            <!-- ombre au sol -->
+            <div style="position:absolute; left:4%; right:4%; top:10%; bottom:-6%; transform:translateZ(-42px); background:radial-gradient(50% 50% at 50% 56%, rgba(70,40,40,0.42), transparent 70%); filter:blur(14px);"></div>
+            <div data-anim="flip" style="position:absolute; inset:0; transform-style:preserve-3d; will-change:transform;">
+              <!-- dos du téléphone (visible en premier, sombre) -->
+              <div style="position:absolute; inset:0; border-radius:30px; backface-visibility:hidden; -webkit-backface-visibility:hidden; transform:rotateX(180deg); background:linear-gradient(158deg,#3c3c46,#17171d); box-shadow:inset 0 0 0 2px rgba(255,255,255,0.07);">
+                <div style="position:absolute; top:14px; left:14px; width:36px; height:36px; border-radius:12px; background:rgba(255,255,255,0.09);"></div>
+                <div style="position:absolute; top:21px; left:21px; width:9px; height:9px; border-radius:50%; background:rgba(0,0,0,0.55); box-shadow:13px 0 0 rgba(0,0,0,0.55), 0 13px 0 rgba(0,0,0,0.55);"></div>
+              </div>
+              <!-- face écran -->
+              <div style="position:absolute; inset:0; border-radius:30px; backface-visibility:hidden; -webkit-backface-visibility:hidden; background:linear-gradient(158deg,#40404a,#1e1e24); padding:7px;">
+                <div style="position:relative; width:100%; height:100%; border-radius:23px; overflow:hidden; background:#E7E3DA;">
+                  <!-- fond carte de secours (si l'embed est bloqué) -->
+                  <div style="position:absolute; inset:0; background:radial-gradient(circle at 74% 22%, rgba(171,197,152,0.6) 0 15%, transparent 16%), radial-gradient(circle at 20% 78%, rgba(171,197,152,0.55) 0 12%, transparent 13%), linear-gradient(#ECE8DF,#E4DFD4);"></div>
+                  <div style="position:absolute; left:-12%; right:-12%; top:42%; height:8px; background:#fbfbf9; transform:rotate(-9deg);"></div>
+                  <div style="position:absolute; top:-12%; bottom:-12%; left:46%; width:7px; background:#fbfbf9; transform:rotate(7deg);"></div>
+                  <!-- aperçu de carte réel (géocodé sur la salle, même requête que le bouton) -->
+                  <iframe data-mapframe title="Carte — Salle Saïd, Sfax" referrerpolicy="no-referrer-when-downgrade" data-src="https://maps.google.com/maps?q=Salle%20Sa%C3%AFd%20Route%20El%20Afrane%20Sfax&z=13&output=embed" style="position:absolute; left:-17%; top:-17%; width:134%; height:134%; border:0; opacity:0; transition:opacity 700ms ease;"></iframe>
+                  <!-- pins Maps qui tombent et se plantent (comme la vidéo) -->
+                  <div data-anim="pin" style="opacity:0; position:absolute; left:50%; top:47%; z-index:3; will-change:transform;">
+                    <svg width="34" height="34" viewBox="0 0 24 24" style="display:block; filter:drop-shadow(0 5px 4px rgba(80,20,30,0.4));"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.4 8 12 8 12s8-6.6 8-12c0-4.42-3.58-8-8-8Z" fill="#E23B4E"/><circle cx="12" cy="10" r="3.1" fill="#fff"/></svg>
+                  </div>
+                  <div data-anim="pin" style="opacity:0; position:absolute; left:64%; top:32%; z-index:3; will-change:transform;">
+                    <svg width="25" height="25" viewBox="0 0 24 24" style="display:block; filter:drop-shadow(0 4px 3px rgba(80,20,30,0.38));"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.4 8 12 8 12s8-6.6 8-12c0-4.42-3.58-8-8-8Z" fill="#E23B4E"/><circle cx="12" cy="10" r="3.1" fill="#fff"/></svg>
+                  </div>
+                  <div data-anim="pin" style="opacity:0; position:absolute; left:37%; top:62%; z-index:3; will-change:transform;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" style="display:block; filter:drop-shadow(0 3px 3px rgba(80,20,30,0.36));"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.4 8 12 8 12s8-6.6 8-12c0-4.42-3.58-8-8-8Z" fill="#E23B4E"/><circle cx="12" cy="10" r="3.1" fill="#fff"/></svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- location card -->
+      <div data-reveal data-delay="240" style="opacity:0; transform:translateY(26px); transition:opacity 1000ms cubic-bezier(0.2,0.8,0.2,1), transform 1000ms cubic-bezier(0.2,0.8,0.2,1); width:100%; max-width:400px; margin-top:26px; background:#FBF5EC; border:1px solid rgba(185,153,95,0.4); border-radius:20px; overflow:hidden; box-shadow:0 20px 44px rgba(150,90,80,0.14);">
+        <div style="position:relative; height:200px; background-image:url('assets/venue_building.jpg'); background-size:cover; background-position:center 48%;">
+          <div style="position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(60,40,35,0.35) 100%);"></div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:12px; padding:18px 20px 6px; text-align:left;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5566A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div>
+            <div style="font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; font-size:17px; color:#3E332E; line-height:1.3;">Route El Afrane, Sfax — km 7</div>
+            <div dir="rtl" lang="ar" style="font-family:'Amiri', serif; font-size:14px; color:#8A7C72; margin-top:2px;">طريق الأفران، صفاقس كم 7</div>
+          </div>
+        </div>
+        <a href="https://www.google.com/maps/search/?api=1&amp;query=Salle%20Sa%C3%AFd%20Route%20El%20Afrane%20Sfax" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; gap:9px; margin:14px 18px 18px; padding:14px 18px; border-radius:13px; background:linear-gradient(180deg, #B5566A, #9E3B4E); color:#FBF5EC; font-family:'Cormorant Garamond', Georgia, serif; font-weight:600; font-size:16px; letter-spacing:0.03em; box-shadow:0 8px 20px rgba(158,59,78,0.28); transition:transform 150ms cubic-bezier(0.2,0.8,0.2,1), box-shadow 150ms;" style-hover="transform:translateY(-1px); box-shadow:0 12px 26px rgba(158,59,78,0.34);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 19-9-9 19-2-8-8-2Z"/></svg>
+          Ouvrir l'itinéraire
+        </a>
+      </div>
+      <div data-fr data-reveal data-delay="320" style="opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Cormorant Garamond', Georgia, serif; font-style:italic; font-size:13.5px; color:#9C8B80; margin-top:16px;">Ouvre l'application Plans pour l'itinéraire jusqu'à la salle</div>
+    </section>
+
+    <!-- SCENE 5 — CLÔTURE -->
+    <section data-screen-label="Clôture" style="position:relative; min-height:100svh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:76px 30px; overflow:hidden; background:#F6E7E2;">
+      <div data-kenburns style="position:absolute; inset:0; z-index:0; background-image:url('assets/hands_soft.jpg'); background-size:cover; background-position:center; transform-origin:center; animation:hmZoom 22s ease-in-out infinite alternate;"></div>
+      <div style="position:absolute; left:50%; top:51%; transform:translate(-50%,-50%); width:min(460px,100%); height:400px; z-index:1; background:radial-gradient(closest-side, rgba(250,240,235,0.45) 0%, rgba(250,240,235,0.2) 50%, rgba(250,240,235,0) 80%); animation:hmGlow 6s ease-in-out infinite; pointer-events:none;"></div>
+
+      <div dir="rtl" lang="ar" data-reveal style="position:relative; z-index:2; opacity:0; transform:translateY(26px); transition:opacity 1100ms cubic-bezier(0.2,0.8,0.2,1), transform 1100ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Aref Ruqaa', serif; font-weight:700; font-size:clamp(42px,15vw,66px); color:#473A31; line-height:1.25; text-shadow:0 1px 10px rgba(255,255,255,0.55);">حضوركم يشرّفنا</div>
+
+      <div data-fr data-reveal data-delay="180" style="position:relative; z-index:2; opacity:0; transform:translateY(26px); transition:opacity 1000ms cubic-bezier(0.2,0.8,0.2,1), transform 1000ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Great Vibes', cursive; font-size:clamp(26px,8vw,36px); color:#9E3B4E; margin-top:12px; text-shadow:0 1px 6px rgba(255,255,255,0.6);">Votre présence nous honore</div>
+
+      <div data-reveal data-delay="320" style="position:relative; z-index:2; opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); display:flex; align-items:center; gap:12px; margin-top:26px; font-family:'Cormorant Garamond', Georgia, serif; letter-spacing:0.28em; font-size:19px; font-weight:600; color:#473A31; text-shadow:0 1px 6px rgba(255,255,255,0.55);">
+        <span style="width:26px; height:1px; background:#C2A76F;"></span>
+        12.08.2026
+        <span style="width:26px; height:1px; background:#C2A76F;"></span>
+      </div>
+      <div data-reveal data-delay="420" style="position:relative; z-index:2; opacity:0; transform:translateY(26px); transition:opacity 900ms cubic-bezier(0.2,0.8,0.2,1), transform 900ms cubic-bezier(0.2,0.8,0.2,1); font-family:'Great Vibes', cursive; font-size:22px; color:#B5566A; text-shadow:0 1px 6px rgba(255,255,255,0.55); margin-top:20px;">Mohamed Amine &amp; Nawres</div>
+    </section>
+
+  </div>
+
+  <!-- ============ MUSIC TOGGLE ============ -->
+  <sc-if value="{{ musicAvail }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ toggleMusic }}" aria-label="Musique" style="position:fixed; bottom:20px; right:calc(50% - 240px + 20px); z-index:70; width:46px; height:46px; border:none; border-radius:9999px; background:rgba(251,245,236,0.9); box-shadow:0 6px 18px rgba(150,90,80,0.22); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#9E3B4E;" style-hover="background:#FBF5EC;">
+      <sc-if value="{{ musicOn }}" hint-placeholder-val="{{ true }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </sc-if>
+      <sc-if value="{{ musicOff }}" hint-placeholder-val="{{ false }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="2" y1="2" x2="22" y2="22" stroke="#B5566A"/></svg>
+      </sc-if>
+    </button>
+  </sc-if>
+
+  <!-- ============ INTRO ENVELOPE OVERLAY ============ -->
+  <div data-intro ref="{{ introRef }}" style="position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; background: radial-gradient(120% 90% at 50% 0%, #F3E7DC 0%, #E6D2C7 60%, #D9C2B7 100%); transition:opacity 620ms ease;">
+    <div onClick="{{ open }}" data-screen-label="Couverture" style="position:relative; width:100%; max-width:480px; height:100svh; max-height:940px; overflow:hidden; background:#8FA98B url('assets/bouquet.jpg') center/cover no-repeat; cursor:pointer; box-shadow:0 0 60px rgba(120,70,60,0.22);">
+
+      <!-- top flap (porte le sceau entier, comme la vidéo : il monte avec lui) -->
+      <div ref="{{ topFlapRef }}" style="position:absolute; left:0; top:0; width:100%; height:52.42%; transition:transform 1000ms cubic-bezier(0.65,0,0.35,1); will-change:transform; z-index:2;">
+        <div style="position:absolute; left:50%; top:0; height:100%; aspect-ratio:792/585; transform:translateX(-50%);">
+          <img src="assets/flap_top.jpg" alt="" style="width:100%; height:100%; display:block;">
+          <img src="assets/seal.png" alt="" style="position:absolute; left:31.57%; top:62.56%; width:37.88%; height:auto; display:block; -webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%, #000 84%, transparent 96%); mask-image:radial-gradient(ellipse 50% 50% at 50% 50%, #000 84%, transparent 96%);">
+        </div>
+      </div>
+      <!-- bottom flap -->
+      <div ref="{{ bottomFlapRef }}" style="position:absolute; left:0; bottom:0; width:100%; height:47.58%; transition:transform 1000ms cubic-bezier(0.65,0,0.35,1); will-change:transform; z-index:1;">
+        <div style="position:absolute; left:50%; bottom:0; height:100%; aspect-ratio:792/531; transform:translateX(-50%);">
+          <img src="assets/flap_bottom.jpg" alt="" style="width:100%; height:100%; display:block;">
+        </div>
+      </div>
+
+      <!-- seal highlight ring -->
+      <div ref="{{ sealRef }}" style="position:absolute; left:50%; top:48.2%; transform:translate(-50%,-50%); width:96px; height:118px; border:1.5px solid rgba(255,255,255,0.62); border-radius:50% 50% 50% 50% / 46% 46% 54% 54%; animation:hmRing 2.6s ease-in-out infinite; pointer-events:none; z-index:3; transition:transform 400ms ease, opacity 400ms ease;"></div>
+
+      <!-- indice d'ouverture — l'enveloppe reste nue comme dans la vidéo -->
+      <div ref="{{ introTextRef }}" style="position:absolute; inset:0; z-index:4; pointer-events:none; transition:opacity 420ms ease, transform 420ms ease;">
+        <div style="position:absolute; left:0; right:0; bottom:8%; text-align:center; padding:0 26px;">
+          <div style="font-family:'Cormorant Garamond', Georgia, serif; letter-spacing:0.18em; font-size:13px; text-transform:uppercase; color:#F5EFE4; text-shadow:0 1px 5px rgba(55,44,34,0.6);">Appuyez pour ouvrir</div>
+          <div dir="rtl" lang="ar" style="font-family:'Amiri', serif; font-size:14px; color:#F5EFE4; text-shadow:0 1px 5px rgba(55,44,34,0.6); margin-top:3px;">اضغطوا لفتح الدعوة</div>
+          <div style="margin-top:12px; animation:hmBob 2s ease-in-out infinite;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F5EFE4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; filter:drop-shadow(0 1px 4px rgba(55,44,34,0.55));"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 390, &quot;height&quot;: 844}, &quot;showFrench&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Contenu&quot;}, &quot;petalsOn&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Ambiance&quot;}, &quot;musicUrl&quot;: {&quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Ambiance&quot;}}">
+class Component extends DCLogic {
+  state = { opened: false, musicAvail: false, musicOn: false };
+
+  componentDidMount() {
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.reduce = reduce;
+
+    // lock page scroll until the envelope is opened
+    document.documentElement.style.scrollBehavior = 'smooth';
+    document.body.style.overflow = 'hidden';
+
+    // language toggle (hide French translations if showFrench is false)
+    this.applyFrench();
+    // ambient petals off if requested or reduced motion
+    if (reduce || this.props.petalsOn === false) {
+      const p = document.querySelector('[data-petals]');
+      if (p) p.style.display = 'none';
+    }
+
+    // ---------- entrance animations (GSAP + ScrollTrigger) ----------
+    const revealAll = () => {
+      document.querySelectorAll('[data-reveal]').forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
+      const d = document.querySelector('[data-anim="doily"]'); if (d) { d.style.opacity = '1'; d.style.clipPath = 'none'; d.style.webkitClipPath = 'none'; }
+      const ph = document.querySelector('[data-anim="phone"]'); if (ph) ph.style.opacity = '1';
+      document.querySelectorAll('[data-anim="pin"]').forEach(pn => { pn.style.opacity = '1'; pn.style.transform = 'translate(-50%,-100%)'; });
+    };
+
+    // aperçu de carte : afficher l'iframe quand elle charge, sinon garder le fond de secours
+    const mf = document.querySelector('[data-mapframe]');
+    if (mf && mf.getAttribute('data-src')) {
+      let ok = false;
+      mf.addEventListener('load', () => { ok = true; mf.style.opacity = '1'; });
+      mf.src = mf.getAttribute('data-src'); // set src AFTER the listener to avoid missing the load event
+      setTimeout(() => { if (!ok) mf.style.opacity = '0'; }, 8000);
+    }
+
+    if (reduce) {
+      revealAll();
+      const kb = document.querySelector('[data-kenburns]'); if (kb) kb.style.animation = 'none';
+    } else {
+      let started = false;
+      const build = () => {
+        if (started) return; started = true;
+        const g = window.gsap, ST = window.ScrollTrigger;
+        if (!g || !ST) { revealAll(); return; }
+        g.registerPlugin(ST);
+        document.querySelectorAll('[data-reveal]').forEach(el => { el.style.transition = 'none'; });
+
+        // fondu + montée + léger flou par scène (rendu « rêveur » de la vidéo)
+        document.querySelectorAll('[data-stage] section').forEach(sec => {
+          const items = sec.querySelectorAll('[data-reveal]');
+          if (!items.length) return;
+          g.fromTo(items, { opacity: 0, y: 30, filter: 'blur(7px)' }, {
+            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.05, ease: 'power3.out', stagger: 0.14,
+            scrollTrigger: { trigger: sec, start: 'top 80%', once: true }
+          });
+        });
+
+        // le napperon se déplie du centre vers les côtés (wipe central, comme la vidéo)
+        const doily = document.querySelector('[data-anim="doily"]');
+        if (doily) {
+          g.set(doily, { clipPath: 'inset(-4% 50% -4% 50%)' });
+          const dtl = g.timeline({ scrollTrigger: { trigger: doily, start: 'top 82%', once: true } });
+          dtl.to(doily, { opacity: 1, duration: 0.25, ease: 'none' });
+          dtl.fromTo(doily,
+            { clipPath: 'inset(-4% 50% -4% 50%)' },
+            { clipPath: 'inset(-4% 0% -4% 0%)', duration: 1.25, ease: 'power2.inOut' }, '-=0.1');
+        }
+
+        // lieu : le téléphone apparaît posé (dos sombre), se retourne, puis les pins Maps tombent et se plantent
+        const phone = document.querySelector('[data-anim="phone"]');
+        if (phone) {
+          const flip = phone.querySelector('[data-anim="flip"]');
+          const pins = phone.querySelectorAll('[data-anim="pin"]');
+          g.set(pins, { xPercent: -50, yPercent: -100 });
+          g.set(flip, { rotationX: 180 });
+          const tl = g.timeline({ scrollTrigger: { trigger: phone, start: 'top 76%', once: true } });
+          tl.fromTo(phone, { opacity: 0, y: 46 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' });
+          tl.to(flip, { rotationX: 0, duration: 1.25, ease: 'power2.inOut' }, '+=0.3');
+          tl.fromTo(pins,
+            { opacity: 0, y: -64, scale: 0.5 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'bounce.out', stagger: 0.35 }, '-=0.15');
+        }
+
+        ST.refresh();
+      };
+      let tries = 0;
+      const wait = () => {
+        if (window.gsap && window.ScrollTrigger) build();
+        else if (tries++ < 60) setTimeout(wait, 60);
+        else revealAll();
+      };
+      wait();
+    }
+
+    // optional ambient music (only if a real track is provided)
+    const url = (this.props.musicUrl || '').trim();
+    if (url) {
+      fetch(url, { method: 'HEAD' }).then(r => {
+        if (r && r.ok) {
+          const a = new Audio(url);
+          a.loop = true;
+          a.preload = 'auto';
+          this.audio = a;
+          this.setState({ musicAvail: true });
+        }
+      }).catch(() => {});
+    }
+  }
+
+  componentDidUpdate(prev) {
+    if (prev && prev.musicUrl !== this.props.musicUrl) { /* editor tweak; reload handled on mount */ }
+    this.applyFrench();
+  }
+
+  applyFrench() {
+    const show = this.props.showFrench !== false;
+    document.querySelectorAll('[data-fr]').forEach(el => {
+      el.style.display = show ? '' : 'none';
+    });
+  }
+
+  open = () => {
+    if (this.state.opened) return;
+    this.setState({ opened: true });
+    if (this.introText) {
+      this.introText.style.opacity = '0';
+      this.introText.style.transform = 'translateY(-10px)';
+    }
+    if (this.seal) {
+      this.seal.style.opacity = '0';
+      this.seal.style.transform = 'translate(-50%,-50%) scale(0.6)';
+    }
+    setTimeout(() => {
+      if (this.topFlap) this.topFlap.style.transform = 'translateY(-104%)';
+      if (this.bottomFlap) this.bottomFlap.style.transform = 'translateY(104%)';
+    }, 240);
+    setTimeout(() => {
+      document.body.style.overflow = '';
+      if (this.intro) { this.intro.style.opacity = '0'; this.intro.style.pointerEvents = 'none'; }
+    }, 980);
+    setTimeout(() => {
+      if (this.intro) this.intro.style.display = 'none';
+      window.scrollTo({ top: 0 });
+      if (window.ScrollTrigger) window.ScrollTrigger.refresh();
+    }, 1600);
+  };
+
+  toggleMusic = () => {
+    const a = this.audio;
+    if (!a) return;
+    if (this.state.musicOn) {
+      a.pause();
+      this.setState({ musicOn: false });
+    } else {
+      a.volume = 0;
+      a.play().then(() => {
+        let v = 0;
+        const t = setInterval(() => { v = Math.min(0.5, v + 0.03); a.volume = v; if (v >= 0.5) clearInterval(t); }, 70);
+      }).catch(() => {});
+      this.setState({ musicOn: true });
+    }
+  };
+
+  renderVals() {
+    return {
+      open: this.open,
+      toggleMusic: this.toggleMusic,
+      musicAvail: this.state.musicAvail,
+      musicOn: this.state.musicOn,
+      musicOff: !this.state.musicOn,
+      introRef: (el) => { this.intro = el; },
+      introTextRef: (el) => { this.introText = el; },
+      topFlapRef: (el) => { this.topFlap = el; },
+      bottomFlapRef: (el) => { this.bottomFlap = el; },
+      sealRef: (el) => { this.seal = el; }
+    };
+  }
+}
+</script>
+</body>
+</html>
