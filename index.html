@@ -2,10 +2,22 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Faire-part — Mohamed Amine &amp; Nawres</title>
 <meta name="description" content="Invitation au mariage de Mohamed Amine &amp; Nawres — Mercredi 12 août 2026, Salle Saïd, Sfax.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💌</text></svg>">
+<link rel="preload" as="image" href="assets/flap_top.jpg">
+<link rel="preload" as="image" href="assets/flap_bottom.jpg">
+<link rel="preload" as="image" href="assets/seal.png">
+<link rel="preload" as="image" href="assets/bouquet.jpg">
+<script>
+  /* Bibliothèques servies localement (fiabilité + vitesse sur mobile) : le
+     runtime lit window.__resources avant de retomber sur les CDN publics. */
+  window.__resources = {
+    "https://unpkg.com/react@18.3.1/umd/react.production.min.js": "assets/vendor/react.production.min.js",
+    "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js": "assets/vendor/react-dom.production.min.js"
+  };
+</script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -53,9 +65,23 @@
     0%   { transform: scale(1); }
     100% { transform: scale(1.1); }
   }
+  /* Fallback pour navigateurs sans unité svh (iOS < 15.4) : la valeur svh
+     posée en style inline est ignorée si non supportée, ces règles prennent alors le relais. */
+  [data-app], [data-stage] section { min-height: 100vh; }
+  [data-intro] [data-screen-label] { height: 100vh; }
+  /* Écrans tactiles : navigation par scroll natif + snap (un geste = une scène).
+     Plus fiable et plus fluide sur iPhone/Android que le défilement piloté en JS. */
+  @media (pointer: coarse) {
+    html { scroll-snap-type: y mandatory; }
+    [data-stage] section { scroll-snap-align: start; scroll-snap-stop: always; }
+  }
+  /* Allègement sur petits écrans : moitié moins de pétales animés */
+  @media (max-width: 480px) {
+    [data-petals] > span:nth-child(even) { display: none; }
+  }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="assets/vendor/gsap.min.js"></script>
+<script src="assets/vendor/ScrollTrigger.min.js"></script>
 </helmet>
 
 <div data-app style="min-height:100svh; background: radial-gradient(120% 90% at 50% 0%, #F3E7DC 0%, #E6D2C7 60%, #D9C2B7 100%); display:flex; justify-content:center;">
@@ -224,7 +250,7 @@
 
   <!-- ============ MUSIC TOGGLE ============ -->
   <sc-if value="{{ musicAvail }}" hint-placeholder-val="{{ false }}">
-    <button onClick="{{ toggleMusic }}" aria-label="Musique" style="position:fixed; bottom:20px; right:calc(50% - 240px + 20px); z-index:70; width:46px; height:46px; border:none; border-radius:9999px; background:rgba(251,245,236,0.9); box-shadow:0 6px 18px rgba(150,90,80,0.22); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#9E3B4E;" style-hover="background:#FBF5EC;">
+    <button onClick="{{ toggleMusic }}" aria-label="Musique" style="position:fixed; bottom:calc(20px + env(safe-area-inset-bottom, 0px)); right:max(14px, calc(50% - 240px + 20px)); z-index:70; width:46px; height:46px; border:none; border-radius:9999px; background:rgba(251,245,236,0.9); box-shadow:0 6px 18px rgba(150,90,80,0.22); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#9E3B4E;" style-hover="background:#FBF5EC;">
       <sc-if value="{{ musicOn }}" hint-placeholder-val="{{ true }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
       </sc-if>
@@ -235,7 +261,7 @@
   </sc-if>
 
   <!-- ============ INTRO ENVELOPE OVERLAY ============ -->
-  <div data-intro ref="{{ introRef }}" style="position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; background: radial-gradient(120% 90% at 50% 0%, #F3E7DC 0%, #E6D2C7 60%, #D9C2B7 100%); transition:opacity 620ms ease;">
+  <div data-intro ref="{{ introRef }}" style="position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; background: radial-gradient(120% 90% at 50% 0%, #F3E7DC 0%, #E6D2C7 60%, #D9C2B7 100%); transition:opacity 620ms ease; touch-action:none;">
     <div onClick="{{ open }}" data-screen-label="Couverture" style="position:relative; width:100%; max-width:480px; height:100svh; max-height:940px; overflow:hidden; background:#8FA98B url('assets/bouquet.jpg') center/cover no-repeat; cursor:pointer; box-shadow:0 0 60px rgba(120,70,60,0.22);">
 
       <!-- top flap (porte le sceau entier, comme la vidéo : il monte avec lui) -->
@@ -278,6 +304,8 @@ class Component extends DCLogic {
   componentDidMount() {
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.reduce = reduce;
+    // écrans tactiles (iPhone/Android) : scroll natif + snap CSS, animations allégées
+    this.isCoarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
 
     // lock page scroll until the envelope is opened
     document.body.style.overflow = 'hidden';
@@ -300,13 +328,26 @@ class Component extends DCLogic {
       document.querySelectorAll('[data-anim="pin"]').forEach(pn => { pn.style.opacity = '1'; pn.style.transform = 'translate(-50%,-100%)'; });
     };
 
-    // aperçu de carte : afficher l'iframe quand elle charge, sinon garder le fond de secours
+    // aperçu de carte : chargé seulement à l'approche de la scène (allège le chargement initial),
+    // affiché quand l'iframe charge, sinon on garde le fond de secours
     const mf = document.querySelector('[data-mapframe]');
     if (mf && mf.getAttribute('data-src')) {
-      let ok = false;
-      mf.addEventListener('load', () => { ok = true; mf.style.opacity = '1'; });
-      mf.src = mf.getAttribute('data-src'); // set src AFTER the listener to avoid missing the load event
-      setTimeout(() => { if (!ok) mf.style.opacity = '0'; }, 8000);
+      let mapStarted = false;
+      const loadMap = () => {
+        if (mapStarted) return; mapStarted = true;
+        let ok = false;
+        mf.addEventListener('load', () => { ok = true; mf.style.opacity = '1'; });
+        mf.src = mf.getAttribute('data-src'); // set src AFTER the listener to avoid missing the load event
+        setTimeout(() => { if (!ok) mf.style.opacity = '0'; }, 8000);
+      };
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          if (entries.some(e => e.isIntersecting)) { io.disconnect(); loadMap(); }
+        }, { rootMargin: '75% 0px' });
+        io.observe(mf);
+      } else {
+        loadMap();
+      }
     }
 
     if (reduce) {
@@ -322,13 +363,18 @@ class Component extends DCLogic {
         document.querySelectorAll('[data-reveal]').forEach(el => { el.style.transition = 'none'; });
 
         // fondu + montée + léger flou par scène (rendu « rêveur » de la vidéo)
+        // — le flou animé est coûteux sur GPU mobile : réservé aux pointeurs fins (desktop)
+        const withBlur = !this.isCoarse;
         document.querySelectorAll('[data-stage] section').forEach(sec => {
           const items = sec.querySelectorAll('[data-reveal]');
           if (!items.length) return;
-          g.fromTo(items, { opacity: 0, y: 30, filter: 'blur(7px)' }, {
-            opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.05, ease: 'power3.out', stagger: 0.14,
+          const from = { opacity: 0, y: 30 };
+          const to = {
+            opacity: 1, y: 0, duration: 1.05, ease: 'power3.out', stagger: 0.14,
             scrollTrigger: { trigger: sec, start: 'top 80%', once: true }
-          });
+          };
+          if (withBlur) { from.filter = 'blur(7px)'; to.filter = 'blur(0px)'; }
+          g.fromTo(items, from, to);
         });
 
         // le napperon se déplie du centre vers les côtés (wipe central, comme la vidéo)
@@ -466,21 +512,20 @@ class Component extends DCLogic {
       wheelLock = now + 420;
       go(e.deltaY > 0 ? 1 : -1);
     }, { passive: false });
-    let touchY = null;
-    window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
-    window.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
-    window.addEventListener('touchend', (e) => {
-      if (touchY === null) return;
-      const dy = touchY - e.changedTouches[0].clientY;
-      touchY = null;
-      if (Math.abs(dy) > 46) go(dy > 0 ? 1 : -1);
-    });
+    // tactile : le défilement est natif (scroll-snap CSS = une scène par geste).
+    // On ne bloque le pan que tant que l'enveloppe est fermée ; le verrou est
+    // retiré à l'ouverture pour ne jamais gêner le scroll natif (fluidité iOS).
+    this._touchLock = (e) => { if (!this.state.opened) e.preventDefault(); };
+    window.addEventListener('touchmove', this._touchLock, { passive: false });
     window.addEventListener('keydown', (e) => {
       if (/^(BUTTON|A|INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(1); }
       else if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(-1); }
     });
     window.addEventListener('resize', () => {
+      // sur tactile, le scroll-snap natif se recale tout seul (la barre d'adresse
+      // iOS déclenche des resize pendant le scroll : ne pas forcer la position)
+      if (this.isCoarse) return;
       if (!animating && this.state.opened) window.scrollTo(0, sections[curIndex()].offsetTop);
     });
   }
@@ -488,6 +533,11 @@ class Component extends DCLogic {
   open = () => {
     if (this.state.opened) return;
     this.setState({ opened: true });
+    // retire le verrou tactile de l'intro : le scroll natif reprend la main
+    if (this._touchLock) {
+      window.removeEventListener('touchmove', this._touchLock);
+      this._touchLock = null;
+    }
     if (this.introText) {
       this.introText.style.opacity = '0';
       this.introText.style.transform = 'translateY(-10px)';
